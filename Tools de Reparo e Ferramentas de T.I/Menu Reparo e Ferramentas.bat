@@ -2,8 +2,8 @@
 title Menu de Reparo e Ferramentas de TI - v3.1
 color 0A
 rem ***************************************************
-rem *        Criado por André Gonçallez            *
-rem * Menu de Reparo e Ferramentas de TI - v3.1      *
+rem *        Criado por André Gonçallez             *
+rem * Menu de Reparo e Ferramentas de TI - v3.1     *
 rem * Data de Criacao: Agosto de 2025                 *
 rem * Contato: Andregoncallez@yahoo.com.br      *
 rem ***************************************************
@@ -11,8 +11,8 @@ rem ***************************************************
 :menu
 cls
 echo ==================================================
-echo     MENU DE REPARO E FERRAMENTAS DE TI - v2.1
-echo     Criado por Estefanio Correia
+echo     MENU DE REPARO E FERRAMENTAS DE TI - v3.1
+echo     Criado por André Gonçallez
 echo ==================================================
 echo 1.  Verificar e Reparar Disco (CHKDSK)
 echo 2.  Reparar Arquivos de Sistema (SFC)
@@ -67,7 +67,7 @@ goto menu
 
 :chkdsk
 cls
-rem * Verificacao de disco por Estefanio Correia *
+rem * Verificacao de disco por André Goncallez *
 echo Executando verificacao e reparo de disco...
 echo Isso pode levar algum tempo. Por favor, aguarde.
 chkdsk C: /f /r
@@ -77,7 +77,7 @@ goto menu
 
 :sfc
 cls
-rem * Reparo de sistema por Estefanio Correia *
+rem * Reparo de sistema por André Gonçallez *
 echo Executando reparo de arquivos de sistema...
 echo Isso pode levar algum tempo. Por favor, aguarde.
 sfc /scannow
@@ -87,7 +87,7 @@ goto menu
 
 :cleanup
 cls
-rem * Limpeza de temporarios por Estefanio Correia *
+rem * Limpeza de temporarios por André Gonçallez *
 echo Limpando arquivos temporarios...
 cleanmgr /sagerun:1
 echo Limpeza concluida!
@@ -96,7 +96,7 @@ goto menu
 
 :memory
 cls
-rem * Diagnostico de memoria por Estefanio Correia *
+rem * Diagnostico de memoria por André Gonçallez *
 echo Abrindo Diagnostico de Memoria do Windows...
 mdsched.exe
 echo Siga as instrucoes na tela para verificar a memoria.
@@ -105,7 +105,7 @@ goto menu
 
 :restore
 cls
-rem * Restauracao do sistema por Estefanio Correia *
+rem * Restauracao do sistema por André Gonçallez *
 echo Abrindo Restauracao do Sistema...
 rstrui.exe
 echo Siga as instrucoes na tela para restaurar o sistema.
@@ -114,7 +114,7 @@ goto menu
 
 :network
 cls
-rem * Teste de rede por Estefanio Correia *
+rem * Teste de rede por André Gonçallez *
 echo Verificando conectividade de rede...
 echo Testando conexao com google.com...
 ping google.com -n 4
@@ -128,7 +128,7 @@ goto menu
 
 :taskmgr
 cls
-rem * Gerenciador de tarefas por Estefanio Correia *
+rem * Gerenciador de tarefas por André Gonçallez *
 echo Abrindo Gerenciador de Tarefas...
 taskmgr.exe
 echo Use o Gerenciador de Tarefas para monitorar ou encerrar processos.
@@ -137,7 +137,7 @@ goto menu
 
 :driverbackup
 cls
-rem * Backup de drivers por Estefanio Correia *
+rem * Backup de drivers por André Gonçallez *
 echo Realizando backup de drivers...
 echo Isso pode levar algum tempo. Por favor, aguarde.
 mkdir C:\DriverBackup
@@ -148,7 +148,7 @@ goto menu
 
 :updates
 cls
-rem * Atualizacoes do Windows por Estefanio Correia *
+rem * Atualizacoes do Windows por André Gonçallez *
 echo Verificando atualizacoes do Windows...
 wuauclt /detectnow /updatenow
 echo Verificacao de atualizacoes iniciada. Verifique o Windows Update para mais detalhes.
@@ -157,7 +157,7 @@ goto menu
 
 :sysinfo
 cls
-rem * Informacoes do sistema por Estefanio Correia *
+rem * Informacoes do sistema por André Gonçallez *
 echo Exibindo informacoes do sistema...
 systeminfo
 echo Informacoes exibidas acima.
@@ -166,7 +166,7 @@ goto menu
 
 :dnscache
 cls
-rem * Limpeza de DNS por Estefanio Correia *
+rem * Limpeza de DNS por André Gonçallez *
 echo Limpando cache DNS...
 ipconfig /flushdns
 echo Cache DNS limpo com sucesso!
@@ -175,7 +175,7 @@ goto menu
 
 :netrestart
 cls
-rem * Reinicio de rede por Estefanio Correia *
+rem * Reinicio de rede por André Gonçallez *
 echo Reiniciando servicos de rede...
 netsh winsock reset
 netsh int ip reset
@@ -185,7 +185,7 @@ goto menu
 
 :defrag
 cls
-rem * Desfragmentacao de disco por Estefanio Correia *
+rem * Desfragmentacao de disco por André Gonçallez *
 echo Executando desfragmentacao de disco...
 defrag C: /O
 echo Desfragmentacao concluida!
@@ -194,7 +194,7 @@ goto menu
 
 :usermgmt
 cls
-rem * Gerenciamento de usuarios por Estefanio Correia *
+rem * Gerenciamento de usuarios por André Gonçallez *
 echo Abrindo Gerenciamento de Usuarios Locais...
 lusrmgr.msc
 echo Use a ferramenta para criar, editar ou excluir usuarios locais.
@@ -203,7 +203,7 @@ goto menu
 
 :dism
 cls
-rem * Integridade de imagem por Estefanio Correia *
+rem * Integridade de imagem por André Gonçallez *
 echo Verificando integridade da imagem do Windows...
 echo Isso pode levar algum tempo. Por favor, aguarde.
 dism /online /cleanup-image /restorehealth
@@ -213,7 +213,7 @@ goto menu
 
 :firewall
 cls
-rem * Configuracao de firewall por Estefanio Correia *
+rem * Configuracao de firewall por André Gonçallez *
 echo Abrindo configuracoes do Firewall do Windows...
 firewall.cpl
 echo Use a ferramenta para ativar ou desativar o firewall.
@@ -222,7 +222,7 @@ goto menu
 
 :eventlog
 cls
-rem * Visualizacao de logs por Estefanio Correia *
+rem * Visualizacao de logs por André Gonçallez *
 echo Abrindo Visualizador de Eventos...
 eventvwr.msc
 echo Use a ferramenta para verificar logs de erros e eventos do sistema.
@@ -231,7 +231,7 @@ goto menu
 
 :disktest
 cls
-rem * Teste de disco por Estefanio Correia *
+rem * Teste de disco por André Gonçallez *
 echo Testando velocidade de disco...
 winsat disk -drive C
 echo Resultados exibidos acima.
@@ -240,16 +240,16 @@ goto menu
 
 :restorepoint
 cls
-rem * Criacao de ponto de restauracao por Estefanio Correia *
+rem * Criacao de ponto de restauracao por André Gonçallez *
 echo Criando ponto de restauracao...
-wmic.exe /Namespace:\\root\default Path SystemRestore Call CreateRestorePoint "Ponto de Restauracao - Estefanio Correia", 100, 7
+wmic.exe /Namespace:\\root\default Path SystemRestore Call CreateRestorePoint "Ponto de Restauracao - André Gonçallez", 100, 7
 echo Ponto de restauracao criado com sucesso!
 pause
 goto menu
 
 :customcmd
 cls
-rem * Comando personalizado por Estefanio Correia *
+rem * Comando personalizado por André Gonçallez *
 echo Abrindo prompt de comando para comandos personalizados...
 cmd.exe
 echo Prompt de comando fechado. Retornando ao menu.
@@ -258,7 +258,7 @@ goto menu
 
 :winget
 cls
-rem * Gerenciamento de aplicativos com Winget por Estefanio Correia *
+rem * Gerenciamento de aplicativos com Winget por André Gonçallez *
 echo ==================================================
 echo     GERENCIADOR DE APLICATIVOS COM WINGET
 echo ==================================================
@@ -283,7 +283,7 @@ goto winget
 
 :wingetlist
 cls
-rem * Listagem de aplicativos com Winget por Estefanio Correia *
+rem * Listagem de aplicativos com Winget por André Gonçallez *
 echo Listando aplicativos instalados...
 winget list
 echo Lista exibida acima.
@@ -292,7 +292,7 @@ goto winget
 
 :wingetsearch
 cls
-rem * Pesquisa de aplicativos com Winget por Estefanio Correia *
+rem * Pesquisa de aplicativos com Winget por André Gonçallez *
 set /p appsearch=Digite o nome do aplicativo para procurar: 
 echo Procurando por "%appsearch%"...
 winget search "%appsearch%"
@@ -302,7 +302,7 @@ goto winget
 
 :wingetinstall
 cls
-rem * Instalacao de aplicativos com Winget por Estefanio Correia *
+rem * Instalacao de aplicativos com Winget por André Gonçallez *
 set /p appinstall=Digite o ID ou nome do aplicativo para instalar: 
 echo Instalando "%appinstall%"...
 winget install "%appinstall%"
@@ -312,7 +312,7 @@ goto winget
 
 :wingetupgrade
 cls
-rem * Atualizacao de aplicativos com Winget por Estefanio Correia *
+rem * Atualizacao de aplicativos com Winget por André Gonçallez *
 echo Atualizando todos os aplicativos...
 winget upgrade --all
 echo Atualizacao concluida ou erros exibidos acima.
@@ -321,7 +321,7 @@ goto winget
 
 :wingetuninstall
 cls
-rem * Desinstalacao de aplicativos com Winget por Estefanio Correia *
+rem * Desinstalacao de aplicativos com Winget por André Gonçallez *
 set /p appuninstall=Digite o ID ou nome do aplicativo para desinstalar: 
 echo Desinstalando "%appuninstall%"...
 winget uninstall "%appuninstall%"
@@ -331,7 +331,7 @@ goto winget
 
 :exit
 cls
-rem * Encerramento do script por Estefanio Correia *
+rem * Encerramento do script por André Gonçallez *
 echo Obrigado por usar o Menu de Reparo e Ferramentas de TI - v3.1!
 echo Criado por André Gonçallez.
 pause
