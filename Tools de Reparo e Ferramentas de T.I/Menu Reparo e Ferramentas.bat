@@ -1,11 +1,11 @@
 @echo off
-title Menu de Reparo e Ferramentas de TI - v2.1
+title Menu de Reparo e Ferramentas de TI - v3.1
 color 0A
 rem ***************************************************
-rem *        Criado por Estefanio Correia             *
-rem * Menu de Reparo e Ferramentas de TI - v2.1      *
+rem *        Criado por André Gonçallez            *
+rem * Menu de Reparo e Ferramentas de TI - v3.1      *
 rem * Data de Criacao: Agosto de 2025                 *
-rem * Contato: estefaniocorreia18@gmail.com      *
+rem * Contato: Andregoncallez@yahoo.com.br      *
 rem ***************************************************
 
 :menu
@@ -332,7 +332,7 @@ goto winget
 :exit
 cls
 rem * Encerramento do script por Estefanio Correia *
-echo Obrigado por usar o Menu de Reparo e Ferramentas de TI - v2.1!
-echo Criado por Estefanio Correia.
+echo Obrigado por usar o Menu de Reparo e Ferramentas de TI - v3.1!
+echo Criado por André Gonçallez.
 pause
 exit
