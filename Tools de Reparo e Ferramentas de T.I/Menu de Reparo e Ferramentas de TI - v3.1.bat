@@ -1,6 +1,14 @@
 @echo off
 title Menu de Reparo e Ferramentas de TI - v3.1
 color 0A
+
+rem ***************************************************
+rem *        Criado por André Gonçallez             *
+rem * Menu de Reparo e Ferramentas de TI - v3.1     *
+rem * Data de Criacao: Agosto de 2025                 *
+rem * Contato: Andregoncallez@yahoo.com.br      *
+rem ***************************************************
+
 set LOGFILE=%~dp0suporte_log.txt
 echo ================================================== >> %LOGFILE%
 echo Iniciando Sessao: %date% %time% >> %LOGFILE%
