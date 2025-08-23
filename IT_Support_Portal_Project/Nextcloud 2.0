@@ -1,0 +1,179 @@
+Criação de grupos TI e Usuários
+
+Criação de um usuário administrador adicional da equipe de TI
+
+Definição de permissões automáticas nas pastas principais (Instaladores, Drivers, Scripts, Documentacao, Templates)
+
+Habilitação inicial de 2FA para a equipe de TI (Nextcloud CLI + configuração inicial)
+
+#!/bin/bash
+# ==================================================================
+# Script Nextcloud 2.0 – Portal de Suporte em TI
+# Pré-requisitos: Ubuntu/Debian, sudo/root
+# ==================================================================
+
+# =========================
+# VARIÁVEIS
+# =========================
+DOMAIN="portal-suporte.exemplo.com"
+DB_NAME="nextcloud"
+DB_USER="nc_user"
+DB_PASS="SenhaForteAqui!"
+NC_ADMIN_USER="admin"
+NC_ADMIN_PASS="SenhaAdminForte!"
+TI_USER="ti_analista"
+TI_PASS="SenhaTiForte!"
+DATA_DIR="/var/www/portal-suporte"
+BACKUP_DIR="/backup/nextcloud"
+EMAIL="seuemail@exemplo.com"
+
+# =========================
+# ATUALIZAÇÃO DO SISTEMA
+# =========================
+echo "Atualizando sistema..."
+sudo apt update && sudo apt upgrade -y
+sudo apt install -y software-properties-common curl wget unzip sudo ufw
+
+# =========================
+# INSTALAÇÃO DE PACOTES
+# =========================
+echo "Instalando pacotes essenciais..."
+sudo apt install -y apache2 mariadb-server libapache2-mod-php \
+php8.2 php8.2-cli php8.2-gd php8.2-mysql php8.2-curl php8.2-mbstring \
+php8.2-intl php8.2-bcmath php8.2-imagick php8.2-xml php8.2-zip php8.2-gmp \
+certbot python3-certbot-apache fail2ban wget unzip
+
+# =========================
+# CONFIGURAÇÃO DO BANCO
+# =========================
+echo "Configurando banco de dados..."
+sudo mysql -e "CREATE DATABASE ${DB_NAME} CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;"
+sudo mysql -e "CREATE USER '${DB_USER}'@'localhost' IDENTIFIED BY '${DB_PASS}';"
+sudo mysql -e "GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO '${DB_USER}'@'localhost';"
+sudo mysql -e "FLUSH PRIVILEGES;"
+
+# =========================
+# DOWNLOAD E INSTALAÇÃO DO NEXTCLOUD
+# =========================
+echo "Baixando e instalando Nextcloud..."
+cd /var/www/
+sudo wget https://download.nextcloud.com/server/releases/latest.zip
+sudo unzip latest.zip
+sudo mv nextcloud portal-suporte
+sudo chown -R www-data:www-data ${DATA_DIR}
+sudo chmod -R 755 ${DATA_DIR}
+
+# =========================
+# CONFIGURAÇÃO DO APACHE
+# =========================
+echo "Configurando Apache..."
+sudo bash -c "cat > /etc/apache2/sites-available/${DOMAIN}.conf <<EOF
+<VirtualHost *:80>
+    ServerName ${DOMAIN}
+    DocumentRoot ${DATA_DIR}
+
+    <Directory ${DATA_DIR}/>
+        Options +FollowSymlinks
+        AllowOverride All
+        Require all granted
+    </Directory>
+
+    ErrorLog \${APACHE_LOG_DIR}/nextcloud_error.log
+    CustomLog \${APACHE_LOG_DIR}/nextcloud_access.log combined
+</VirtualHost>
+EOF"
+
+sudo a2enmod rewrite headers env dir mime ssl
+sudo a2ensite ${DOMAIN}.conf
+sudo systemctl restart apache2
+
+# =========================
+# CONFIGURAÇÃO SSL LET'S ENCRYPT
+# =========================
+echo "Configurando SSL Let's Encrypt..."
+sudo certbot --apache -d ${DOMAIN} --non-interactive --agree-tos -m ${EMAIL} --redirect
+
+# =========================
+# CRIAÇÃO DE ESTRUTURA DE PASTAS
+# =========================
+echo "Criando estrutura de pastas..."
+sudo -u www-data mkdir -p ${DATA_DIR}/{Instaladores,Drivers,Scripts,Documentacao,Templates}
+
+# =========================
+# CONFIGURAÇÃO DE GRUPOS E USUÁRIOS
+# =========================
+echo "Configurando grupos e usuários..."
+sudo -u www-data php ${DATA_DIR}/occ group:add TI
+sudo -u www-data php ${DATA_DIR}/occ group:add Usuarios
+
+sudo -u www-data php ${DATA_DIR}/occ user:add --password-from-env ${TI_USER}
+export OC_PASS=${TI_PASS}
+sudo -u www-data php ${DATA_DIR}/occ user:add --password-from-env $TI_USER
+sudo -u www-data php ${DATA_DIR}/occ group:adduser TI $TI_USER
+
+# =========================
+# DEFINIÇÃO DE PERMISSÕES NAS PASTAS
+# =========================
+echo "Definindo permissões..."
+# TI -> Leitura e Escrita
+# Usuários -> Apenas download
+# (Nextcloud controla via grupos, mas podemos definir owner www-data)
+sudo chown -R www-data:www-data ${DATA_DIR}
+sudo chmod -R 770 ${DATA_DIR}/Instaladores
+sudo chmod -R 770 ${DATA_DIR}/Drivers
+sudo chmod -R 770 ${DATA_DIR}/Scripts
+sudo chmod -R 770 ${DATA_DIR}/Documentacao
+sudo chmod -R 770 ${DATA_DIR}/Templates
+
+# =========================
+# BACKUPS AUTOMÁTICOS
+# =========================
+echo "Configurando backups automáticos..."
+sudo mkdir -p ${BACKUP_DIR}
+sudo bash -c "cat > /etc/cron.d/nextcloud_backup <<EOF
+0 2 * * * root tar -czf ${BACKUP_DIR}/data_\$(date +\%F).tar.gz -C ${DATA_DIR} .
+0 3 * * * root mysqldump -u ${DB_USER} -p'${DB_PASS}' ${DB_NAME} > ${BACKUP_DIR}/db_\$(date +\%F).sql
+EOF"
+
+# =========================
+# FIREWALL E FAIL2BAN
+# =========================
+sudo ufw allow OpenSSH
+sudo ufw allow 'Apache Full'
+sudo ufw enable
+sudo systemctl enable --now fail2ban
+
+# =========================
+# HABILITAR 2FA INICIAL (Requer Nextcloud 23+)
+# =========================
+echo "Habilitando 2FA para TI (via occ)..."
+sudo -u www-data php ${DATA_DIR}/occ twofactorauth:enable $TI_USER totp
+
+# =========================
+# FINALIZAÇÃO
+# =========================
+echo "=============================="
+echo "Nextcloud 2.0 instalado e configurado!"
+echo "Acesse: https://${DOMAIN}"
+echo "Usuário admin: ${NC_ADMIN_USER}"
+echo "Usuário TI: ${TI_USER} (com 2FA habilitado)"
+echo "=============================="
+
+✅ Como usar:
+
+Salve como install_nextcloud_2.0.sh
+
+Ajuste as variáveis: DOMAIN, DB_PASS, NC_ADMIN_PASS, TI_PASS, EMAIL
+
+Torne executável:
+
+chmod +x install_nextcloud_2.0.sh
+
+
+Execute:
+
+sudo ./install_nextcloud_2.0.sh
+
+
+Aguarde a instalação e acesse via navegador:
+https://portal-suporte.exemplo.com
