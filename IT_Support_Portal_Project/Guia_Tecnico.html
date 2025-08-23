@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guia Interativo: Implantação do Portal de Suporte TI com Nextcloud</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Slate Blue & Warm Gray -->
+    <!-- Application Structure Plan: A task-oriented, single-page application with a fixed sidebar for navigation and a dynamic main content area. The structure is divided into the logical phases of deployment from the source document (Installation, SSL, Permissions, Security, etc.). This non-linear structure allows users to easily jump between different stages of the setup process, which is more practical for a technical guide than a long, linear document. Key interactions include one-click copy buttons for code snippets and a visual, interactive representation of the folder structure to improve usability and reduce errors. -->
+    <!-- Visualization & Content Choices: Report Info: Step-by-step commands and configurations. -> Goal: Organize & Inform. -> Viz/Presentation Method: The guide is presented in thematic sections. Code snippets are in pre-formatted blocks. Configuration details are in tabbed interfaces. Folder structures are shown as visual diagrams. -> Interaction: Sidebar navigation to switch between phases, copy-to-clipboard buttons for all commands, and clickable tabs for complex configurations. -> Justification: This approach breaks down dense technical information into manageable, interactive chunks, enhancing user comprehension and efficiency. -> Library/Method: Vanilla JavaScript for interactions, Tailwind CSS for styling and layout. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .content-section { display: none; }
+        .content-section.active { display: block; }
+        .nav-link { transition: all 0.2s ease-in-out; }
+        .nav-link.active { background-color: #4A5568; color: #FFFFFF; }
+        .nav-link:hover { background-color: #2D3748; color: #FFFFFF; }
+        .code-block { position: relative; }
+        .copy-btn { position: absolute; top: 0.5rem; right: 0.5rem; opacity: 0.5; transition: opacity 0.2s ease-in-out; }
+        .code-block:hover .copy-btn { opacity: 1; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .tab-btn.active { border-color: #3B82F6; color: #3B82F6; background-color: #EFF6FF; }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+    <div class="flex flex-col md:flex-row min-h-screen">
+        <!-- Sidebar Navigation -->
+        <aside class="w-full md:w-64 bg-gray-800 text-gray-200 p-4 md:p-6 flex-shrink-0">
+            <h1 class="text-2xl font-bold mb-6 text-white">Portal de Suporte TI</h1>
+            <nav id="navigation" class="space-y-2">
+                <a href="#fase1" class="nav-link active flex items-center p-3 rounded-lg">
+                    <span class="mr-3">🚀</span> Fase 1: Instalação
+                </a>
+                <a href="#fase2" class="nav-link flex items-center p-3 rounded-lg">
+                    <span class="mr-3">🔒</span> Fase 2: Configuração SSL
+                </a>
+                <a href="#fase3" class="nav-link flex items-center p-3 rounded-lg">
+                    <span class="mr-3">📂</span> Fase 3: Estrutura de Pastas
+                </a>
+                <a href="#fase4" class="nav-link flex items-center p-3 rounded-lg">
+                    <span class="mr-3">👤</span> Fase 4: Autenticação
+                </a>
+                <a href="#fase5" class="nav-link flex items-center p-3 rounded-lg">
+                    <span class="mr-3">🛡️</span> Fase 5: Segurança
+                </a>
+                <a href="#fase6" class="nav-link flex items-center p-3 rounded-lg">
+                    <span class="mr-3">🧩</span> Fase 6: Expansão
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-6 md:p-10 overflow-y-auto">
+            
+            <!-- Fase 1: Instalação Inicial -->
+            <section id="fase1" class="content-section active">
+                <h2 class="text-4xl font-extrabold text-gray-900 mb-4">Fase 1: Instalação Inicial do Servidor e Nextcloud</h2>
+                <p class="text-lg text-gray-600 mb-8">Esta fase aborda a preparação do servidor, a instalação dos componentes essenciais (Apache, MariaDB, PHP) e o download e configuração inicial do Nextcloud. Siga os passos para construir a base do seu portal.</p>
+                
+                <div class="space-y-6">
+                    <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200">
+                        <h3 class="text-xl font-bold mb-3">2.1. Atualizar o Sistema e Instalar Ferramentas</h3>
+                        <p class="mb-4">Mantenha seu sistema atualizado e instale as ferramentas básicas necessárias para os próximos passos.</p>
+                        <div class="code-block">
+                            <pre class="bg-gray-900 text-white p-4 rounded-lg overflow-x-auto"><code id="code1">sudo apt update && sudo apt upgrade -y
+sudo apt install -y curl wget unzip nano vim</code></pre>
+                            <button class="copy-btn bg-gray-700 text-white px-3 py-1 rounded-md text-sm" onclick="copyToClipboard('code1')">Copiar</button>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200">
+                        <h3 class="text-xl font-bold mb-3">2.2. Instalar Apache Web Server</h3>
+                        <p class="mb-4">Instale e habilite o Apache, o servidor web que hospedará sua instância do Nextcloud.</p>
+                        <div class="code-block">
+                            <pre class="bg-gray-900 text-white p-4 rounded-lg overflow-x-auto"><code id="code2">sudo apt install -y apache2
+sudo systemctl enable apache2
+sudo systemctl start apache2</code></pre>
+                            <button class="copy-btn bg-gray-700 text-white px-3 py-1 rounded-md text-sm" onclick="copyToClipboard('code2')">Copiar</button>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200">
+                        <h3 class="text-xl font-bold mb-3">2.3. Instalar MariaDB Database Server</h3>
+                        <p class="mb-4">Configure o MariaDB, o sistema de banco de dados que armazenará os dados do Nextcloud. Execute o script de segurança para proteger sua instalação.</p>
+                        <div class="code-block">
+                            <pre class="bg-gray-900 text-white p-4 rounded-lg overflow-x-auto"><code id="code3">sudo apt install -y mariadb-server mariadb-client
+sudo systemctl enable mariadb
+sudo systemctl start mariadb
+sudo mysql_secure_installation</code></pre>
+                            <button class="copy-btn bg-gray-700 text-white px-3 py-1 rounded-md text-sm" onclick="copyToClipboard('code3')">Copiar</button>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200">
+                        <h3 class="text-xl font-bold mb-3">2.4. Instalar PHP e Módulos Necessários</h3>
+                        <p class="mb-4">Instale o PHP e todas as extensões exigidas pelo Nextcloud para garantir a funcionalidade completa.</p>
+                        <div class="code-block">
+                            <pre class="bg-gray-900 text-white p-4 rounded-lg overflow-x-auto"><code id="code4">sudo apt install -y php8.1 libapache2-mod-php8.1 php8.1-gd php8.1-mysql php8.1-curl php8.1-mbstring php8.1-intl php8.1-zip php8.1-xml php8.1-bz2 php8.1-imagick php8.1-gmp php8.1-bcmath php8.1-fpm php8.1-common php-common php8.1-cli</code></pre>
+                            <button class="copy-btn bg-gray-700 text-white px-3 py-1 rounded-md text-sm" onclick="copyToClipboard('code4')">Copiar</button>
+                        </div>
+                        <p class="mt-4">Após a instalação, é crucial ajustar o arquivo `php.ini` para otimizar o desempenho com arquivos grandes. Edite `/etc/php/8.1/apache2/php.ini` com os valores recomendados no guia.</p>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200">
+                        <h3 class="text-xl font-bold mb-3">2.5. Criar o Banco de Dados para Nextcloud</h3>
+                        <p class="mb-4">Crie um banco de dados e um usuário dedicados para o Nextcloud, garantindo um ambiente isolado e seguro.</p>
+                        <div class="code-block">
+                            <pre class="bg-gray-900 text-white p-4 rounded-lg overflow-x-auto"><code id="code5">sudo mysql -u root -p
+CREATE DATABASE nextcloud CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+CREATE USER 'nextclouduser'@'localhost' IDENTIFIED BY 'sua_senha_segura';
+GRANT ALL PRIVILEGES ON nextcloud.* TO 'nextclouduser'@'localhost';
+FLUSH PRIVILEGES;
+EXIT;</code></pre>
+                            <button class="copy-btn bg-gray-700 text-white px-3 py-1 rounded-md text-sm" onclick="copyToClipboard('code5')">Copiar</button>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200">
+                        <h3 class="text-xl font-bold mb-3">2.6. Baixar e Instalar o Nextcloud</h3>
+                        <p class="mb-4">Baixe a versão mais recente do Nextcloud, descompacte no diretório do servidor web e defina as permissões corretas.</p>
+                        <div class="code-block">
+                            <pre class="bg-gray-900 text-white p-4 rounded-lg overflow-x-auto"><code id="code6">wget https://download.nextcloud.com/server/releases/latest.zip
+unzip latest.zip -d /var/www/
+sudo chown -R www-data:www-data /var/www/nextcloud/
+sudo chmod -R 755 /var/www/nextcloud/</code></pre>
+                            <button class="copy-btn bg-gray-700 text-white px-3 py-1 rounded-md text-sm" onclick="copyToClipboard('code6')">Copiar</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Fase 2: Configuração SSL -->
+            <section id="fase2" class="content-section">
+                <h2 class="text-4xl font-extrabold text-gray-900 mb-4">Fase 2: Configuração SSL com Let's Encrypt</h2>
+                <p class="text-lg text-gray-600 mb-8">A segurança é fundamental. Nesta fase, você instalará o Certbot e obterá um certificado SSL gratuito da Let's Encrypt para habilitar o HTTPS, criptografando toda a comunicação com seu portal.</p>
+                <div class="space-y-6">
+                    <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200">
+                        <h3 class="text-xl font-bold mb-3">3.1. Instalar Certbot</h3>
+                        <p class="mb-4">Instale o Certbot e o plugin para Apache, que automatizará a configuração do SSL.</p>
+                        <div class="code-block">
+                            <pre class="bg-gray-900 text-white p-4 rounded-lg overflow-x-auto"><code id="code7">sudo apt install -y certbot python3-certbot-apache</code></pre>
+                            <button class="copy-btn bg-gray-700 text-white px-3 py-1 rounded-md text-sm" onclick="copyToClipboard('code7')">Copiar</button>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200">
+                        <h3 class="text-xl font-bold mb-3">3.2. Obter e Configurar Certificado SSL</h3>
+                        <p class="mb-4">Execute o Certbot para o seu domínio. Siga as instruções para obter o certificado e configurar o redirecionamento automático de HTTP para HTTPS.</p>
+                        <div class="code-block">
+                            <pre class="bg-gray-900 text-white p-4 rounded-lg overflow-x-auto"><code id="code8">sudo certbot --apache -d suporte.suaempresa.com.br</code></pre>
+                            <button class="copy-btn bg-gray-700 text-white px-3 py-1 rounded-md text-sm" onclick="copyToClipboard('code8')">Copiar</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Fase 3: Estrutura de Pastas -->
+            <section id="fase3" class="content-section">
+                <h2 class="text-4xl font-extrabold text-gray-900 mb-4">Fase 3: Organização da Estrutura de Pastas</h2>
+                <p class="text-lg text-gray-600 mb-8">Uma boa organização é a chave para um portal de suporte eficiente. Utilize a interface web do Nextcloud para criar uma estrutura de pastas lógica e centralizada para todos os seus recursos de TI.</p>
+                <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200">
+                    <h3 class="text-xl font-bold mb-4">Estrutura Recomendada</h3>
+                    <div class="bg-gray-50 p-4 rounded-lg font-mono text-sm text-gray-700 space-y-2">
+                        <div><span>📁 Portal-Suporte</span></div>
+                        <div class="ml-6"><span> L 📁 Instaladores</span></div>
+                        <div class="ml-12"><span>  L 📄 SophosSetup.exe</span></div>
+                        <div class="ml-12"><span>  L 📄 AnyDesk.msi</span></div>
+                        <div class="ml-6"><span> L 📁 Drivers</span></div>
+                        <div class="ml-12"><span>  L 📁 HP</span></div>
+                        <div class="ml-12"><span>  L 📁 Dell</span></div>
+                        <div class="ml-6"><span> L 📁 Scripts</span></div>
+                        <div class="ml-12"><span>  L 📄 resetar_senha.bat</span></div>
+                        <div class="ml-12"><span>  L 📄 instalar_printer.ps1</span></div>
+                        <div class="ml-6"><span> L 📁 Documentacao</span></div>
+                        <div class="ml-12"><span>  L 📄 guia_vpn.pdf</span></div>
+                        <div class="ml-6"><span> L 📁 Templates</span></div>
+                        <div class="ml-12"><span>  L 📄 modelo_relatorio.docx</span></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Fase 4: Autenticação -->
+            <section id="fase4" class="content-section">
+                <h2 class="text-4xl font-extrabold text-gray-900 mb-4">Fase 4: Autenticação e Permissões</h2>
+                <p class="text-lg text-gray-600 mb-8">Integre o Nextcloud com seu Active Directory (LDAP) para centralizar a autenticação e gerenciar permissões de forma granular. Defina quem pode ver, baixar e editar os arquivos do portal.</p>
+                <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200">
+                    <h3 class="text-xl font-bold mb-3">5.1. Instalar o Aplicativo LDAP/AD</h3>
+                    <p>Como administrador, acesse "Aplicativos" na interface do Nextcloud, procure por "User authentication via LDAP and Active Directory" e ative-o.</p>
+                </div>
+                <div class="bg-white p-6 mt-6 rounded-xl shadow-md border border-gray-200">
+                    <h3 class="text-xl font-bold mb-4">5.2. Configurar a Integração LDAP/AD</h3>
+                    <p class="mb-4">Nas configurações de administração, acesse "LDAP/AD integration" e preencha as abas com as informações do seu ambiente.</p>
+                    <div id="ldap-tabs">
+                        <div class="border-b border-gray-200">
+                            <nav class="-mb-px flex space-x-8" aria-label="Tabs">
+                                <button class="tab-btn active whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm" data-tab="server">Servidor</button>
+                                <button class="tab-btn whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="users">Usuários</button>
+                                <button class="tab-btn whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="groups">Grupos</button>
+                            </nav>
+                        </div>
+                        <div class="py-4">
+                            <div id="server" class="tab-content active">
+                                <ul class="list-disc list-inside space-y-2 text-gray-700">
+                                    <li><strong>Host:</strong> `ldap://seu_controlador_de_dominio.com`</li>
+                                    <li><strong>Porta:</strong> `389` (ou `636` para LDAPS)</li>
+                                    <li><strong>Base DN:</strong> `DC=seu_dominio,DC=com`</li>
+                                    <li><strong>DN do usuário bind:</strong> `CN=UsuarioBind,OU=Usuarios,DC=seu_dominio,DC=com`</li>
+                                </ul>
+                            </div>
+                            <div id="users" class="tab-content">
+                                <ul class="list-disc list-inside space-y-2 text-gray-700">
+                                    <li><strong>Filtro de usuário:</strong> `(&(objectClass=user)(memberOf=CN=GrupoUsuariosNextcloud,...))`</li>
+                                    <li><strong>Atributo de login:</strong> `samaccountname`</li>
+                                </ul>
+                            </div>
+                            <div id="groups" class="tab-content">
+                                <ul class="list-disc list-inside space-y-2 text-gray-700">
+                                     <li><strong>Filtro de grupo:</strong> `(objectClass=group)`</li>
+                                     <li>Use esta aba para mapear grupos do AD para o Nextcloud.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Fase 5: Segurança -->
+            <section id="fase5" class="content-section">
+                <h2 class="text-4xl font-extrabold text-gray-900 mb-4">Fase 5: Segurança Adicional</h2>
+                <p class="text-lg text-gray-600 mb-8">Fortaleça a segurança do seu portal com medidas essenciais como autenticação de dois fatores (2FA), backups automatizados e proteção contra ataques de força bruta.</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200">
+                        <h3 class="text-xl font-bold mb-3">Autenticação de Dois Fatores (2FA)</h3>
+                        <p>Ative o aplicativo "Two-Factor Authentication" e incentive sua equipe de TI a configurar um segundo fator (TOTP, WebAuthn) para proteger suas contas.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200">
+                        <h3 class="text-xl font-bold mb-3">Logs de Auditoria</h3>
+                        <p>Monitore as atividades no portal acessando "Configurações" > "Registro". Veja quem fez upload, download ou alterou arquivos.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200 col-span-1 md:col-span-2">
+                        <h3 class="text-xl font-bold mb-3">Backup Diário</h3>
+                        <p class="mb-4">Configure um cron job para executar backups diários dos arquivos e do banco de dados do Nextcloud.</p>
+                        <div class="code-block">
+                            <pre class="bg-gray-900 text-white p-4 rounded-lg overflow-x-auto"><code id="code9"># Backup de Arquivos
+sudo rsync -Aax /var/www/nextcloud/ /path/to/backup/
+# Backup do Banco de Dados
+sudo mysqldump -u nextclouduser -p'sua_senha_segura' nextcloud > /path/to/backup/nextcloud_db.sql</code></pre>
+                            <button class="copy-btn bg-gray-700 text-white px-3 py-1 rounded-md text-sm" onclick="copyToClipboard('code9')">Copiar</button>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200 col-span-1 md:col-span-2">
+                        <h3 class="text-xl font-bold mb-3">Fail2Ban contra Força Bruta</h3>
+                        <p class="mb-4">Proteja seu servidor contra ataques de força bruta no SSH e no Apache.</p>
+                        <div class="code-block">
+                            <pre class="bg-gray-900 text-white p-4 rounded-lg overflow-x-auto"><code id="code10">sudo apt install -y fail2ban
+sudo cp /etc/fail2ban/jail.conf /etc/fail2ban/jail.local
+sudo systemctl restart fail2ban</code></pre>
+                            <button class="copy-btn bg-gray-700 text-white px-3 py-1 rounded-md text-sm" onclick="copyToClipboard('code10')">Copiar</button>
+                        </div>
+                        <p class="mt-4">Após a instalação, edite o arquivo `/etc/fail2ban/jail.local` para habilitar a proteção para o Apache.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Fase 6: Expansão -->
+            <section id="fase6" class="content-section">
+                <h2 class="text-4xl font-extrabold text-gray-900 mb-4">Fase 6: Expansão (Opcional)</h2>
+                <p class="text-lg text-gray-600 mb-8">Leve seu portal para o próximo nível habilitando aplicativos extras do Nextcloud que transformam sua instância em um ecossistema de TI completo, com edição de documentos online, base de conhecimento e automações.</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200">
+                        <h3 class="text-xl font-bold mb-3">📝 OnlyOffice/Collabora</h3>
+                        <p>Permita a edição de documentos do Office (DOCX, XLSX, PPTX) diretamente no navegador, facilitando a colaboração em tempo real.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200">
+                        <h3 class="text-xl font-bold mb-3">📚 Wiki (Collectives)</h3>
+                        <p>Crie uma base de conhecimento integrada para documentar procedimentos, políticas e tutoriais de forma colaborativa e organizada.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200">
+                        <h3 class="text-xl font-bold mb-3">⚙️ Flow Automations</h3>
+                        <p>Crie fluxos de trabalho automatizados, como enviar notificações para uma equipe quando um novo instalador é adicionado a uma pasta específica.</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const navLinks = document.querySelectorAll('.nav-link');
+            const contentSections = document.querySelectorAll('.content-section');
+            const tabButtons = document.querySelectorAll('.tab-btn');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            function showSection(hash) {
+                const targetId = hash ? hash.substring(1) : 'fase1';
+                
+                contentSections.forEach(section => {
+                    if (section.id === targetId) {
+                        section.classList.add('active');
+                    } else {
+                        section.classList.remove('active');
+                    }
+                });
+
+                navLinks.forEach(link => {
+                    if (link.getAttribute('href') === `#${targetId}`) {
+                        link.classList.add('active');
+                    } else {
+                        link.classList.remove('active');
+                    }
+                });
+            }
+            
+            document.getElementById('navigation').addEventListener('click', function(e) {
+                if (e.target.closest('.nav-link')) {
+                    e.preventDefault();
+                    const link = e.target.closest('.nav-link');
+                    const targetId = link.getAttribute('href');
+                    window.location.hash = targetId;
+                }
+            });
+
+            window.addEventListener('hashchange', () => showSection(window.location.hash));
+            
+            showSection(window.location.hash);
+
+            document.getElementById('ldap-tabs').addEventListener('click', function(e) {
+                if (e.target.classList.contains('tab-btn')) {
+                    const tabId = e.target.dataset.tab;
+
+                    tabButtons.forEach(btn => btn.classList.remove('active', 'border-blue-500', 'text-blue-600', 'bg-blue-50'));
+                    e.target.classList.add('active', 'border-blue-500', 'text-blue-600', 'bg-blue-50');
+
+                    tabContents.forEach(content => {
+                        if (content.id === tabId) {
+                            content.classList.add('active');
+                        } else {
+                            content.classList.remove('active');
+                        }
+                    });
+                }
+            });
+        });
+
+        function copyToClipboard(elementId) {
+            const codeEl = document.getElementById(elementId);
+            const text = codeEl.innerText;
+            
+            const tempTextArea = document.createElement('textarea');
+            tempTextArea.value = text;
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+            try {
+                document.execCommand('copy');
+                alert('Comando copiado para a área de transferência!');
+            } catch (err) {
+                console.error('Falha ao copiar texto: ', err);
+            }
+            document.body.removeChild(tempTextArea);
+        }
+    </script>
+</body>
+</html>
