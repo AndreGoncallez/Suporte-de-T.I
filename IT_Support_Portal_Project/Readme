@@ -1,0 +1,444 @@
+🚀 Portal de Suporte em TI com Nextcloud
+Este repositório contém um guia técnico passo a passo para configurar um Portal de Suporte em TI interno/externo utilizando o Nextcloud. O objetivo é centralizar instaladores, scripts, documentação e outros recursos essenciais, proporcionando acesso seguro e eficiente para a equipe de TI e usuários autorizados.
+
+📋 Sumário
+1. Sobre o Projeto
+
+2. Pré-requisitos
+
+3. Fase 1: Instalação Inicial do Servidor e Nextcloud
+
+3.1. Atualizar o Sistema e Instalar Ferramentas Essenciais
+
+3.2. Instalar Apache Web Server
+
+3.3. Instalar MariaDB Database Server
+
+3.4. Instalar PHP e Módulos Necessários
+
+3.5. Criar o Banco de Dados para Nextcloud
+
+3.6. Baixar e Instalar o Nextcloud
+
+3.7. Configurar Virtual Host do Apache para Nextcloud
+
+3.8. Concluir a Configuração do Nextcloud (Via Web)
+
+4. Fase 2: Configuração SSL com Let's Encrypt
+
+4.1. Instalar Certbot
+
+4.2. Obter e Configurar Certificado SSL
+
+5. Fase 3: Organização da Estrutura de Pastas no Nextcloud
+
+6. Fase 4: Autenticação e Permissões (Integração LDAP/Active Directory)
+
+6.1. Instalar o Aplicativo LDAP/AD no Nextcloud
+
+6.2. Configurar o LDAP/AD no Nextcloud
+
+6.3. Gerenciar Permissões de Acesso às Pastas
+
+7. Fase 5: Segurança Adicional e Configurações Recomendadas
+
+7.1. Autenticação de Dois Fatores (2FA)
+
+7.2. Logs de Auditoria
+
+7.3. Backup Diário
+
+7.4. Snapshots Semanais do Servidor
+
+7.5. Fail2Ban contra Força Bruta
+
+8. Fase 6 (Opcional): Habilitar Aplicativos Extras do Nextcloud
+
+9. Benefícios Esperados
+
+10. Recomendações Práticas
+
+1. Sobre o Projeto
+Este guia detalha o processo de implantação de um Portal de Suporte em TI usando Nextcloud em um servidor Linux (Ubuntu/Debian). O portal tem como objetivo principal centralizar e facilitar o acesso a:
+
+📂 Instaladores e softwares: Antivírus, AnyDesk, drivers, pacotes.
+
+🖥 Scripts de automação: PowerShell, BAT, Bash.
+
+📘 Documentação de suporte: Manuais, tutoriais, políticas.
+
+🔍 Busca rápida de arquivos e informações.
+
+✅ Controle de acesso seguro para equipe de TI e usuários autorizados.
+
+2. Pré-requisitos
+Antes de iniciar a configuração, certifique-se de ter os seguintes requisitos:
+
+Sistema Operacional: Um servidor com Ubuntu Server LTS (versão 20.04 ou superior) ou Debian (versão 11 ou superior) instalado.
+
+Acesso SSH: Acesso SSH ao servidor com um usuário que possua privilégios sudo.
+
+Nome de Domínio: Um nome de domínio registrado (ex: suporte.suaempresa.com.br) e apontado para o IP público do seu servidor. Isso é fundamental para a configuração do SSL com Let's Encrypt e para acesso externo seguro.
+
+Portas de Rede: Portas 80 (HTTP) e 443 (HTTPS) abertas no firewall do servidor e, se aplicável, na sua rede para acesso público.
+
+3. Fase 1: Instalação Inicial do Servidor e Nextcloud
+Esta fase abrange a preparação do ambiente Linux e a instalação dos componentes essenciais para o Nextcloud.
+
+3.1. Atualizar o Sistema e Instalar Ferramentas Essenciais
+Conecte-se ao seu servidor via SSH e execute os comandos para atualizar o sistema e instalar ferramentas básicas:
+
+sudo apt update && sudo apt upgrade -y
+sudo apt install -y curl wget unzip nano vim
+
+3.2. Instalar Apache Web Server
+Instale o servidor web Apache e garanta que ele inicie automaticamente com o sistema:
+
+sudo apt install -y apache2
+sudo systemctl enable apache2
+sudo systemctl start apache2
+
+Verifique o status do Apache para confirmar que está active (running):
+
+sudo systemctl status apache2
+
+3.3. Instalar MariaDB Database Server
+Instale o MariaDB, o sistema de banco de dados que o Nextcloud utilizará, e execute o script de segurança para proteger a instalação. Defina uma senha forte para o usuário root do MariaDB e responda Y para as outras perguntas durante o mysql_secure_installation.
+
+sudo apt install -y mariadb-server mariadb-client
+sudo systemctl enable mariadb
+sudo systemctl start mariadb
+sudo mysql_secure_installation
+
+3.4. Instalar PHP e Módulos Necessários
+O Nextcloud exige PHP e vários módulos. Para PHP 8.1, utilize os seguintes comandos:
+
+sudo apt install -y php8.1 libapache2-mod-php8.1 php8.1-gd php8.1-mysql php8.1-curl php8.1-mbstring php8.1-intl php8.1-zip php8.1-xml php8.1-bz2 php8.1-imagick php8.1-gmp php8.1-bcmath php8.1-fpm php8.1-common php-common php8.1-cli
+
+Importante: Se optar por Nginx em vez de Apache, você usaria php8.1-fpm em vez de libapache2-mod-php8.1 e precisaria configurar o Nginx para usar o PHP-FPM.
+
+Ajuste as configurações do PHP para otimizar o Nextcloud. Edite o arquivo /etc/php/8.1/apache2/php.ini:
+
+sudo nano /etc/php/8.1/apache2/php.ini
+
+Procure e altere as seguintes linhas (remova o ; no início se estiverem comentadas):
+
+memory_limit = 512M
+upload_max_filesize = 10G       ; Ajuste conforme sua necessidade, 10GB é um exemplo.
+post_max_size = 10G             ; Deve ser igual ou maior que upload_max_filesize.
+max_execution_time = 360
+max_input_time = 360
+date.timezone = America/Sao_Paulo ; Ajuste para seu fuso horário
+
+Salve as alterações (Ctrl+O, Enter) e saia (Ctrl+X). Em seguida, reinicie o Apache:
+
+sudo systemctl restart apache2
+
+3.5. Criar o Banco de Dados para Nextcloud
+Acesse o console do MariaDB como root (insira a senha que você definiu na instalação) e crie o banco de dados e um usuário dedicado para o Nextcloud:
+
+sudo mysql -u root -p
+```sql
+CREATE DATABASE nextcloud CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+CREATE USER 'nextclouduser'@'localhost' IDENTIFIED BY 'sua_senha_segura'; -- Troque 'sua_senha_segura' por uma senha forte
+GRANT ALL PRIVILEGES ON nextcloud.* TO 'nextclouduser'@'localhost';
+FLUSH PRIVILEGES;
+EXIT;
+
+3.6. Baixar e Instalar o Nextcloud
+Baixe a versão mais recente do Nextcloud e defina as permissões corretas para o diretório. Verifique a página de download do Nextcloud para a versão mais atual: https://nextcloud.com/install/#instructions-server
+
+wget [https://download.nextcloud.com/server/releases/nextcloud-29.0.2.zip](https://download.nextcloud.com/server/releases/nextcloud-29.0.2.zip) # Ajuste a versão conforme necessário
+sudo unzip nextcloud-29.0.2.zip -d /var/www/
+sudo mv /var/www/nextcloud /var/www/html/nextcloud # Mova para o diretório padrão do Apache
+
+Defina as permissões de arquivo e propriedade para que o Apache possa acessar e modificar os arquivos do Nextcloud:
+
+sudo chown -R www-data:www-data /var/www/html/nextcloud/
+sudo chmod -R 755 /var/www/html/nextcloud/
+
+3.7. Configurar Virtual Host do Apache para Nextcloud
+Crie um arquivo de configuração de Virtual Host para o Nextcloud no Apache. Substitua suporte.suaempresa.com.br pelo seu domínio:
+
+sudo nano /etc/apache2/sites-available/nextcloud.conf
+
+Adicione o seguinte conteúdo:
+
+<VirtualHost *:80>
+    ServerAdmin webmaster@localhost
+    DocumentRoot /var/www/html/nextcloud
+    ServerName suporte.suaempresa.com.br
+
+    <Directory /var/www/html/nextcloud/>
+        Require all granted
+        AllowOverride All
+        Options FollowSymlinks MultiViews
+
+        <IfModule mod_dav.c>
+            Dav off
+        </IfModule>
+    </Directory>
+
+    ErrorLog ${APACHE_LOG_DIR}/nextcloud_error.log
+    CustomLog ${APACHE_LOG_DIR}/nextcloud_access.log combined
+
+</VirtualHost>
+
+Habilite o site e os módulos necessários do Apache e reinicie o serviço:
+
+sudo a2ensite nextcloud.conf
+sudo a2enmod rewrite dir headers env mime
+sudo systemctl restart apache2
+
+3.8. Concluir a Configuração do Nextcloud (Via Web)
+Agora, abra seu navegador e acesse http://suporte.suaempresa.com.br.
+
+Você será direcionado para a página de configuração inicial do Nextcloud:
+
+Criar conta de administrador: Defina um nome de usuário e uma senha fortes para o administrador do Nextcloud.
+
+Configuração do banco de dados:
+
+Usuário do banco de dados: nextclouduser
+
+Senha do banco de dados: sua_senha_segura (a que você definiu anteriormente)
+
+Nome do banco de dados: nextcloud
+
+Host do banco de dados: localhost
+
+Clique em "Instalar".
+
+Aguarde a conclusão da instalação. Você será redirecionado para a interface do Nextcloud.
+
+4. Fase 2: Configuração SSL com Let's Encrypt
+É fundamental que seu portal use HTTPS para garantir a segurança dos dados.
+
+4.1. Instalar Certbot
+Instale o Certbot e o plugin para Apache, que automatizará a obtenção e configuração do certificado SSL:
+
+sudo apt install -y certbot python3-certbot-apache
+
+4.2. Obter e Configurar Certificado SSL
+Execute o Certbot para o seu domínio (substitua suporte.suaempresa.com.br pelo seu domínio real):
+
+sudo certbot --apache -d suporte.suaempresa.com.br
+
+Siga as instruções na tela:
+
+Digite seu endereço de e-mail.
+
+Aceite os termos de serviço.
+
+Decida se deseja redirecionar o tráfego HTTP para HTTPS (recomenda-se 2 - Redirect para segurança).
+
+O Certbot configurará automaticamente o Apache para usar HTTPS e criará uma entrada para renovação automática do certificado.
+
+5. Fase 3: Organização da Estrutura de Pastas no Nextcloud
+Uma estrutura de pastas bem organizada é crucial para a eficiência do portal de suporte. Dentro da interface web do Nextcloud, como administrador, crie a seguinte estrutura:
+
+Acesse o ícone de "Arquivos" no menu superior.
+
+Crie uma nova pasta chamada Portal-Suporte.
+
+Dentro de Portal-Suporte, crie as subpastas:
+
+Instaladores
+
+SophosSetup.exe
+
+AnyDesk.msi
+
+ChromeEnterprise.msi
+
+Drivers
+
+HP
+
+Dell
+
+Canon
+
+Scripts
+
+resetar_senha.bat
+
+instalar_printer.ps1
+
+Documentacao
+
+guia_vpn.pdf
+
+checklist_suporte.docx
+
+politicas_ti.pdf
+
+Templates
+
+modelo_relatorio_incidente.docx
+
+modelo_checklist.xlsx
+
+Agora você pode começar a fazer upload dos seus arquivos para as pastas correspondentes.
+
+6. Fase 4: Autenticação e Permissões (Integração LDAP/Active Directory)
+A integração com seu diretório de usuários existente (Active Directory ou LDAP) centraliza a autenticação e simplifica o gerenciamento de permissões.
+
+6.1. Instalar o Aplicativo LDAP/AD no Nextcloud
+Como administrador, clique no ícone do usuário no canto superior direito e vá em "Aplicativos".
+
+Na barra lateral esquerda, selecione "Produtividade" ou use a barra de pesquisa para encontrar "User authentication via LDAP and Active Directory".
+
+Clique em "Ativar".
+
+6.2. Configurar o LDAP/AD no Nextcloud
+Após ativar, clique novamente no ícone do usuário e vá em "Configurações".
+
+Na barra lateral esquerda, clique em "LDAP/AD integration".
+
+Preencha as informações do seu servidor Active Directory/LDAP nas abas correspondentes:
+
+Aba "Servidor":
+
+Host: ldap://seu_controlador_de_dominio.com ou ldaps://seu_controlador_de_dominio.com (use LDAPS se possível, porta 636)
+
+Porta: 389 (LDAP) ou 636 (LDAPS)
+
+Base DN: DC=seu_dominio,DC=com (ex: DC=suaempresa,DC=com,DC=br)
+
+DN do usuário bind: CN=UsuarioBind,OU=Usuarios,DC=seu_dominio,DC=com (um usuário com permissões de leitura no AD/LDAP)
+
+Senha do usuário bind: senha_do_usuario_bind (a senha do usuário bind)
+
+Aba "Usuários":
+
+Filtro de usuário: Defina um filtro para quais usuários do AD/LDAP serão visíveis no Nextcloud. Exemplo: (&(objectClass=user)(memberOf=CN=GrupoUsuariosNextcloud,OU=Grupos,DC=seu_dominio,DC=com))
+
+Atributo de login: samaccountname (comum para Active Directory)
+
+Aba "Grupos":
+
+Filtro de grupo: Defina quais grupos do AD/LDAP serão visíveis. Exemplo: (objectClass=group)
+
+Mapeamento de grupos: Você pode mapear grupos específicos do AD/LDAP para grupos internos do Nextcloud para gerenciar permissões de forma mais fácil.
+
+Use o botão "Testar configuração" para verificar se as credenciais e filtros estão corretos.
+
+Quando estiver satisfeito, clique em "Salvar".
+
+6.3. Gerenciar Permissões de Acesso às Pastas
+No Nextcloud, como administrador, navegue até a pasta Portal-Suporte:
+
+Passe o mouse sobre a pasta Portal-Suporte e clique no ícone de "Compartilhar".
+
+Comece a digitar o nome dos grupos LDAP (ex: "TI", "Usuários Finais") que você deseja conceder acesso.
+
+Para o grupo "TI" (ou similar):
+
+Conceda permissões de Criação, Edição e Exclusão.
+
+Para o grupo "Usuários Finais" (ou similar):
+
+Conceda apenas permissões de Leitura (Baixar).
+
+7. Fase 5: Segurança Adicional e Configurações Recomendadas
+Reforçar a segurança do seu portal é uma prioridade contínua.
+
+7.1. Autenticação de Dois Fatores (2FA)
+Habilite e incentive o uso do 2FA para a equipe de TI:
+
+No Nextcloud, como administrador, vá em "Aplicativos".
+
+Pesquise por "Two-Factor Authentication" e ative os métodos que você deseja oferecer (ex: TOTP, WebAuthn).
+
+Os usuários da equipe de TI devem ir em suas "Configurações" de perfil para configurar e ativar o 2FA.
+
+7.2. Logs de Auditoria
+O Nextcloud registra eventos de atividade. Monitore-os regularmente:
+
+No Nextcloud, como administrador, vá em "Configurações".
+
+Na barra lateral, em "Administração", clique em "Registro".
+
+Você poderá visualizar os logs de atividades, incluindo uploads, downloads, exclusões e alterações de arquivos.
+
+7.3. Backup Diário
+Configure backups diários para arquivos e banco de dados. Adapte os caminhos para o seu ambiente e automatize com um cron job.
+
+Backup de Arquivos do Nextcloud:
+
+sudo rsync -Aax /var/www/html/nextcloud/ /path/to/backup/nextcloud_files_$(date +%Y%m%d)/
+
+Backup do Banco de Dados MariaDB:
+
+sudo mysqldump -u nextclouduser -p'sua_senha_segura' nextcloud > /path/to/backup/nextcloud_db_$(date +%Y%m%d).sql
+
+Importante: Substitua nextcloud_senha_segura pela senha real do usuário do banco de dados Nextcloud.
+
+7.4. Snapshots Semanais do Servidor
+Se o seu servidor for uma Máquina Virtual (VM) ou estiver hospedado em um provedor de nuvem, utilize os recursos da plataforma para criar snapshots semanais. Isso permite uma recuperação rápida do estado do servidor em caso de falhas críticas.
+
+7.5. Fail2Ban contra Força Bruta
+Instale e configure o Fail2Ban para proteger o SSH e o Apache/Nginx contra ataques de força bruta, bloqueando IPs maliciosos.
+
+sudo apt install -y fail2ban
+sudo cp /etc/fail2ban/jail.conf /etc/fail2ban/jail.local
+
+Edite o arquivo jail.local para configurar as jails para Apache, se necessário (a de SSH geralmente já vem habilitada):
+
+sudo nano /etc/fail2ban/jail.local
+
+Certifique-se de que [sshd] esteja habilitado (normalmente está por padrão). Para Apache, adicione seções como esta:
+
+[apache-badbots]
+enabled = true
+port    = http,https
+logpath = /var/log/apache2/access.log
+bantime = 43200 ; 12 horas
+maxretry = 3
+
+[apache-noscript]
+enabled = true
+port = http,https
+logpath = /var/log/apache2/error.log
+bantime = 43200
+maxretry = 3
+
+Reinicie o Fail2Ban para aplicar as alterações:
+
+sudo systemctl restart fail2ban
+
+8. Fase 6 (Opcional): Habilitar Aplicativos Extras do Nextcloud
+Expanda as funcionalidades do seu portal ativando aplicativos adicionais do Nextcloud, disponíveis na seção "Aplicativos" da interface de administração:
+
+OnlyOffice/Collabora: Para edição de documentos online (DOCX, XLSX, PPTX) diretamente no navegador, permitindo colaboração em tempo real. Pode exigir um servidor OnlyOffice ou Collabora separado ou o uso de uma versão comunitária.
+
+Wiki (Collectives): Crie uma base de conhecimento integrada para documentar procedimentos, políticas e tutoriais de forma colaborativa e organizada.
+
+Flow Automations: Automatize tarefas e fluxos de trabalho, como o envio de alertas automáticos quando um novo instalador é adicionado ou atualizado em uma pasta específica.
+
+9. Benefícios Esperados
+Ao implementar este Portal de Suporte em TI, sua organização pode esperar os seguintes benefícios:
+
+✅ Centralização do suporte: Um único portal para todos os recursos e informações de TI.
+
+✅ Acesso rápido: Facilidade para encontrar instaladores, drivers e tutoriais.
+
+✅ Segurança corporativa: Controle de usuários e logs de auditoria garantem a integridade dos dados.
+
+✅ Redução de tempo: Menos tempo gasto em tarefas repetitivas de suporte.
+
+✅ Base de conhecimento compartilhada: Informações sempre atualizadas e acessíveis para toda a equipe.
+
+10. Recomendações Práticas
+Integração com AD/LDAP: Se a empresa já possui um Active Directory ou servidor LDAP, a integração com o Nextcloud é a abordagem mais recomendada para gestão de usuários e permissões.
+
+Autenticação Local com 2FA: Caso não haja um AD/LDAP, utilize a autenticação local do Nextcloud com 2FA para garantir a segurança inicial.
+
+Evolução para GLPI: Considere integrar o Nextcloud com uma ferramenta de gerenciamento de chamados como o GLPI para criar um ecossistema de TI completo, conectando a gestão de arquivos à gestão de tickets.
+
+🤝 Contribuição
+Sinta-se à vontade para sugerir melhorias ou contribuir com este guia.
+
+📄 Licença
+Este projeto está licenciado sob a licença [Nome da Licença, ex: MIT License] - veja o arquivo LICENSE para detalhes.
