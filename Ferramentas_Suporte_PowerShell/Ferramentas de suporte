@@ -1,0 +1,105 @@
+# =====================================================================
+#  AndreGoncallez-SupportTools.ps1
+#  Ferramenta de Suporte Técnico - Júnior, Pleno e Sênior
+#  Desenvolvido em PowerShell por André Gonçallez
+# =====================================================================
+
+# --- Função para formatar títulos com cor ---
+function Show-Header($text, $color="Cyan") {
+    Write-Host "`n=================================================" -ForegroundColor $color
+    Write-Host " $text" -ForegroundColor $color
+    Write-Host "=================================================" -ForegroundColor $color
+}
+
+# --- Menu Principal ---
+function Show-Menu {
+    Clear-Host
+    Show-Header "Andre Goncallez - Support Tools"
+
+    Write-Host "1. Rede" -ForegroundColor Cyan
+    Write-Host "2. Usuários e Domínio" -ForegroundColor Magenta
+    Write-Host "3. Disco e Sistema" -ForegroundColor Yellow
+    Write-Host "4. Administração Avançada (Sênior)" -ForegroundColor Green
+    Write-Host "0. Sair" -ForegroundColor Red
+}
+
+# -------------------- Funções de Rede --------------------
+function Rede-Junior {
+    Show-Header "Ferramentas de Rede - Júnior"
+    ipconfig /all
+    ipconfig /flushdns
+    ipconfig /renew
+    netsh winsock reset
+    arp -a
+    route print
+    pause
+}
+function Rede-Pleno {
+    Show-Header "Ferramentas de Rede - Pleno"
+    Test-NetConnection google.com -Port 443
+    Get-NetAdapter | Format-Table Name, Status, MacAddress
+    netstat -ano | Select-String "ESTABLISHED"
+    pause
+}
+function Rede-Senior {
+    Show-Header "Ferramentas de Rede - Sênior"
+    tracert google.com
+    Get-NetTCPConnection | Sort-Object LocalPort | Format-Table -AutoSize
+    Get-NetFirewallRule | Where-Object {$_.Enabled -eq "True"} | Select-Object DisplayName, Direction, Action
+    pause
+}
+
+# -------------------- Usuários e Domínio --------------------
+function Usuarios {
+    Show-Header "Usuários e Domínio"
+    whoami
+    whoami /groups
+    nltest /dsgetdc:domain | Out-Null
+    if ($?) { Write-Host "Membro de domínio detectado." -ForegroundColor Green }
+    else { Write-Host "Máquina não pertence a domínio." -ForegroundColor Red }
+    pause
+}
+
+# -------------------- Disco e Sistema --------------------
+function Disco {
+    Show-Header "Disco e Sistema"
+    Get-PSDrive -PSProvider FileSystem
+    Get-Process | Sort-Object CPU -Descending | Select-Object -First 10
+    Get-EventLog System -Newest 20 | Format-Table TimeGenerated, EntryType, Source, Message -AutoSize
+    sfc /scannow
+    chkdsk
+    DISM /Online /Cleanup-Image /RestoreHealth
+    pause
+}
+
+# -------------------- Administração Avançada --------------------
+function Admin-Senior {
+    Show-Header "Administração Avançada - Sênior"
+    Get-ComputerInfo | Select-Object CsName, WindowsProductName, WindowsVersion, OsArchitecture
+    w32tm /resync
+    wuauclt /detectnow
+    Get-EventLog Security -Newest 20 | Format-Table TimeGenerated, EntryType, Message -AutoSize
+    Restart-Service spooler
+    pause
+}
+
+# -------------------- Execução do Script --------------------
+do {
+    Show-Menu
+    $opcao = Read-Host "Digite o número da sua opção"
+
+    switch ($opcao) {
+        "1" {
+            Clear-Host
+            Write-Host "1. Júnior" -ForegroundColor Yellow
+            Write-Host "2. Pleno" -ForegroundColor Green
+            Write-Host "3. Sênior" -ForegroundColor Red
+            $nivel = Read-Host "Escolha o nível"
+            switch ($nivel) {
+                "1" { Rede-Junior }
+                "2" { Rede-Pleno }
+                "3" { Rede-Senior }
+            }
+        }
+        "2" { Usuarios }
+        "3" { Disco }
