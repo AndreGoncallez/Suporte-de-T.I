@@ -1,128 +1,48 @@
-# 🛠️ Painel Profissional de Suporte Técnico e Redes - v3.0
+# 🛠️ Painel Profissional de Suporte Técnico e Redes
 
-Painel interativo e automatizado para diagnóstico, manutenção e suporte técnico em ambientes Windows. Ideal para técnicos de infraestrutura, help desk, redes e segurança da informação.
+[![Windows](https://img.shields.io/badge/Windows-10%2F11-blue?logo=windows&logoColor=white)]()
+[![PowerShell](https://img.shields.io/badge/PowerShell-5.1%2B-lightgrey?logo=powershell&logoColor=blue)]()
+[![Batch](https://img.shields.io/badge/Batch-Scripts-black?logo=windows-terminal&logoColor=white)]()
+[![License](https://img.shields.io/badge/License-MIT-green)]()
 
-**Desenvolvido por:** André Gonçalles  
-**Atualizado:** Agosto de 2025  
-**Contato:** andregoncallez@yahoo.com.br  
-
----
-
-## 📦 Instalação
-
-1. Baixe ou clone este repositório.
-2. Execute o arquivo `PainelSuporteTI_PRO_v3.0.bat` **como administrador**.
-3. Utilize o menu para selecionar a função desejada.
+📌 Repositório com um **conjunto de ferramentas e scripts de suporte técnico** para ambientes Windows.  
+Organizado em **painéis e utilitários automatizados**, voltados para técnicos de **infraestrutura, help desk, redes e cibersegurança**.  
 
 ---
 
-## 🔧 Estrutura do Menu
+## 📂 Estrutura do Repositório
 
-As opções são organizadas por frequência de uso e agrupadas por categoria:
+A pasta principal de **SuporteTI** está organizada em **módulos separados por área**:
 
-### [+] FUNÇÕES MAIS UTILIZADAS:
-
-| Nº | Função                                  | O que faz                                                                 |
-|----|------------------------------------------|---------------------------------------------------------------------------|
-| 1  | Reparar Arquivos do Sistema (SFC)        | Executa `sfc /scannow` para reparar arquivos corrompidos do Windows.      |
-| 2  | Verificar Disco com Reparo (CHKDSK)      | Usa `chkdsk /f /r` para checar erros e setores defeituosos no disco.      |
-| 3  | Restaurar Integridade do Windows (DISM)  | Utiliza `dism /restorehealth` para reparar a imagem do sistema.           |
-| 4  | Verificar Conectividade de Rede          | Testa internet via `ping` e mostra gateway local.                         |
-| 5  | Reiniciar Serviços de Rede               | Executa `netsh winsock reset` e `ip reset`.                               |
-
----
-
-### [+] SEGURANÇA E MONITORAMENTO:
-
-| Nº | Função                                | O que faz                                                               |
-|----|----------------------------------------|-------------------------------------------------------------------------|
-| 6  | Limpar Cache DNS                      | Executa `ipconfig /flushdns` para limpar cache de DNS.                  |
-| 7  | Verificar Status do Defender          | Mostra status atual do antivírus do Windows.                            |
-| 8  | Verificação Rápida com o Defender     | Executa varredura de ameaças com PowerShell (`Start-MpScan`).           |
-| 9  | Logs do Sistema                       | Abre o visualizador de eventos do Windows.                              |
-| 10 | Gerenciar Firewall                    | Abre as configurações do firewall (`firewall.cpl`).                     |
+| Pasta / Módulo                 | Descrição                                                                 |
+|--------------------------------|---------------------------------------------------------------------------|
+| 🔹 `PainelSuporteTI_PRO_v3.0`  | Painel interativo em Batch com funções de diagnóstico e manutenção.        |
+| 🔹 `Scripts_PowerShell`        | Coleção de scripts avançados em PowerShell para automação e suporte.      |
+| 🔹 `Redes`                     | Ferramentas e comandos para análise e troubleshooting de rede.             |
+| 🔹 `Seguranca`                 | Scripts e utilitários de análise de segurança, firewall e antivírus.       |
+| 🔹 `Backup_Restore`            | Rotinas para backup, restauração e gerenciamento de drivers e dados.       |
+| 🔹 `Logs_Diagnosticos`         | Coleta e análise de logs do Windows para suporte e auditoria.              |
 
 ---
 
-### [+] SISTEMA E BACKUP:
+## 🚀 Principais Funcionalidades
 
-| Nº | Função                        | O que faz                                                              |
-|----|-------------------------------|------------------------------------------------------------------------|
-| 11 | Limpeza de Arquivos Temporários | Usa o `cleanmgr` para liberar espaço no disco.                         |
-| 12 | Diagnóstico de Memória RAM     | Executa `mdsched.exe` para detectar erros na memória.                  |
-| 13 | Criar Ponto de Restauração     | Gera um ponto de restauração com `wmic`.                               |
-
----
-
-### [+] MANUTENÇÃO AVANÇADA:
-
-| Nº | Função              | O que faz                                                                |
-|----|---------------------|--------------------------------------------------------------------------|
-| 14 | Backup de Drivers   | Exporta os drivers instalados para `C:\DriverBackup` via `DISM`.         |
+✅ **Manutenção do Sistema** – SFC, CHKDSK, DISM, limpeza de temporários  
+✅ **Rede e Conectividade** – Ping, tracert, reset Winsock, cache DNS  
+✅ **Segurança e Monitoramento** – Windows Defender, firewall, logs do sistema  
+✅ **Backup e Restauração** – Drivers, pontos de restauração, dados críticos  
+✅ **Administração Avançada** – Diagnósticos, performance e automação completa  
 
 ---
 
-### [+] MONITORAMENTO E INFORMAÇÕES:
+## 🔧 Como Utilizar
 
-| Nº | Função                      | O que faz                                                        |
-|----|-----------------------------|------------------------------------------------------------------|
-| 15 | Testar Desempenho do Disco | Mede a performance do disco com `winsat disk`.                   |
+1. **Escolha o módulo desejado** dentro da pasta principal.  
+2. **Execute como Administrador** o painel ou script.  
+3. Utilize os menus interativos para selecionar a função desejada.  
 
----
+Exemplo (Painel em Batch):  
+```powershell
+cd SuporteTI
+.\PainelSuporteTI_PRO_v3.0.bat
 
-### [+] UTILITÁRIOS:
-
-| Nº | Função                    | O que faz                                                           |
-|----|---------------------------|---------------------------------------------------------------------|
-| 16 | Ver Informações do Sistema | Exibe informações detalhadas com `systeminfo`.                      |
-| 17 | Gerenciar Usuários Locais | Abre `lusrmgr.msc` para gerenciar contas de usuário.                |
-
----
-
-### [+] ATUALIZAÇÃO:
-
-| Nº | Função                        | O que faz                                                         |
-|----|-------------------------------|-------------------------------------------------------------------|
-| 18 | Verificar Atualizações       | Força o Windows a buscar atualizações com `wuauclt`.              |
-
----
-
-### [+] GERENCIAMENTO DE APLICATIVOS:
-
-| Nº | Função         | O que faz                                                              |
-|----|----------------|------------------------------------------------------------------------|
-| 19 | Winget CLI     | Lista, instala ou remove aplicativos com o gerenciador `winget`.       |
-
----
-
-### [+] FLUXO AUTOMATIZADO:
-
-| Nº | Função                          | O que faz                                                                 |
-|----|----------------------------------|---------------------------------------------------------------------------|
-| 20 | Execução Completa de Manutenção | Executa uma rotina com `SFC`, `DISM`, `Flush DNS`, `Reset Rede`, e Updates.|
-
----
-
-### [+] ENCERRAR:
-
-| Nº | Função     | O que faz                    |
-|----|------------|------------------------------|
-| 21 | Encerrar   | Fecha o painel de forma segura. |
-
----
-
-## 📝 Observações
-
-- Alguns comandos exigem execução como administrador.
-- O log das ações fica salvo em `diagnostico_ti_log.txt` na mesma pasta do script.
-- Ideal para técnicos que desejam agilidade e padronização nas tarefas de suporte.
-
----
-
-## 📄 Licença
-
-Este projeto é de uso **livre para fins educacionais e profissionais**, desde que mantido o crédito ao autor original.
-
----
-
-Desenvolvido com 💻 por **André Gonçalles**
